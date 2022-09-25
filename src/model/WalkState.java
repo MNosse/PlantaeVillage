@@ -7,19 +7,23 @@ public abstract class WalkState {
         PLAYER = player;
     }
     
-    protected abstract String getImageName();
+    protected abstract String getImageIdleName();
     
-    protected abstract void changeToWalkStateIdle();
+    protected abstract String getImageAnimationName();
     
-    protected abstract void changeToWalkStateUp();
+    protected void changeToWalkStateUp() {
+        PLAYER.setWalkState(new WalkStateUp(PLAYER));
+    }
     
-    protected abstract void changeToWalkStateDown();
+    protected void changeToWalkStateDown() {
+        PLAYER.setWalkState(new WalkStateDown(PLAYER));
+    }
     
-    protected abstract void changeToWalkStateLeft();
+    protected void changeToWalkStateLeft() {
+        PLAYER.setWalkState(new WalkStateLeft(PLAYER));
+    }
     
-    protected abstract void changeToWalkStateRight();
-    
-    protected Player getPLAYER() {
-        return PLAYER;
+    protected void changeToWalkStateRight() {
+        PLAYER.setWalkState(new WalkStateRight(PLAYER));
     }
 }

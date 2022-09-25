@@ -7,32 +7,17 @@ public class WalkStateUp extends WalkState {
     }
     
     @Override
-    protected String getImageName() {
+    protected String getImageIdleName() {
         return "caminho";
     }
     
     @Override
-    protected void changeToWalkStateIdle() {
-        getPLAYER().setWalkState(new WalkStateIdle(getPLAYER()));
+    protected String getImageAnimationName() {
+        return "caminho";
     }
     
     @Override
     protected void changeToWalkStateUp() {
     
-    }
-    
-    @Override
-    protected void changeToWalkStateDown() {
-        getPLAYER().setWalkState(new WalkStateDown(getPLAYER()));
-    }
-    
-    @Override
-    protected void changeToWalkStateLeft() {
-        getPLAYER().setWalkState(new WalkStateLeft(getPLAYER()));
-    }
-    
-    @Override
-    protected void changeToWalkStateRight() {
-        getPLAYER().setWalkState(new WalkStateRight(getPLAYER()));
     }
 }

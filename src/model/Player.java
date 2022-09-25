@@ -11,46 +11,34 @@ public class Player {
     public Player(int row, int column) {
         this.row = row;
         this.column = column;
-        walkState = new WalkStateIdle(this);
+        walkState = new WalkStateUp(this);
     }
     
-    public String getWalkStateImageName() {
-        return walkState.getImageName();
+    public String getImageIdleName() {
+        return walkState.getImageIdleName();
     }
     
-    public void changeToWalkStateIdle() {
-        walkState.changeToWalkStateIdle();
-    }
-    
-    public void changeToWalkStateUp() {
-        walkState.changeToWalkStateUp();
-    }
-    
-    public void changeToWalkStateDown() {
-        walkState.changeToWalkStateDown();
-    }
-    
-    public void changeToWalkStateLeft() {
-        walkState.changeToWalkStateLeft();
-    }
-    
-    public void changeToWalkStateRight() {
-        walkState.changeToWalkStateRight();
+    public String getImageAnimationName() {
+        return walkState.getImageAnimationName();
     }
     
     public void walkUp() {
+        walkState.changeToWalkStateUp();
         row = (row - GlobalVariables.TILE_SIZE);
     }
     
     public void walkDown() {
+        walkState.changeToWalkStateDown();
         row = (row + GlobalVariables.TILE_SIZE);
     }
     
     public void walkLeft() {
+        walkState.changeToWalkStateLeft();
         column = (column - GlobalVariables.TILE_SIZE);
     }
     
     public void walkRight() {
+        walkState.changeToWalkStateRight();
         column = (column + GlobalVariables.TILE_SIZE);
     }
     
@@ -76,10 +64,6 @@ public class Player {
     
     public void setPlant(Plant plant) {
         this.plant = plant;
-    }
-    
-    protected WalkState getWalkState() {
-        return walkState;
     }
     
     protected void setWalkState(WalkState walkState) {
