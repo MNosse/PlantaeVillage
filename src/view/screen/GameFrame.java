@@ -4,8 +4,10 @@ import controller.obsever.GameFrameObserver;
 import view.global.GlobalVariables;
 
 import javax.swing.*;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 
-public class GameFrame extends JFrame implements GameFrameObserver {
+public class GameFrame extends JFrame implements GameFrameObserver{
     
     public GameFrame() {
         initialize();
@@ -23,8 +25,9 @@ public class GameFrame extends JFrame implements GameFrameObserver {
     
     @Override
     public void navigateToVillageScreen() {
-        setContentPane(new VillageScreen());
-        revalidate();
-        repaint();
+         new VillageScreen();
+//        setContentPane(new VillageScreen());
+//        revalidate();
+//        repaint();
     }
 }

@@ -1,5 +1,7 @@
 package model;
 
+import view.global.GlobalVariables;
+
 public class WalkStateLeft extends WalkState {
     
     public WalkStateLeft(Player player) {
@@ -8,12 +10,12 @@ public class WalkStateLeft extends WalkState {
     
     @Override
     protected String getImageIdleName() {
-        return "caminho";
+        return GlobalVariables.PLAYER_IDLE_LEFT_KEY;
     }
     
     @Override
     protected String getImageAnimationName() {
-        return "caminho";
+        return GlobalVariables.PLAYER_ANIMATION_LEFT_KEY;
     }
     
     @Override
