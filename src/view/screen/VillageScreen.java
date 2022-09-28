@@ -28,7 +28,7 @@ public class VillageScreen extends JPanel implements VillageScreenObserver{
     private void initialize() {
         //JLABEL lblPlayer
         lblPlayer = new JLabel(GlobalVariables.IMAGES.get(controller.getPlayerImageIdleName()));
-        lblPlayer.setBounds(controller.getPlayerColumn(), controller.getPlayerRow(), GlobalVariables.TILE_SIZE, GlobalVariables.TILE_SIZE*2);
+        lblPlayer.setBounds(controller.getPlayerColumn()*GlobalVariables.TILE_SIZE, controller.getPlayerRow()*GlobalVariables.TILE_SIZE, GlobalVariables.TILE_SIZE, GlobalVariables.TILE_SIZE*2);
         //JLABEL lblFountain
         lblFountain = new JLabel(GlobalVariables.IMAGES.get(GlobalVariables.FOUNTAIN_KEY));
         lblFountain.setBounds(GlobalVariables.TILE_SIZE*18, GlobalVariables.TILE_SIZE*4, GlobalVariables.TILE_SIZE*3, GlobalVariables.TILE_SIZE*3);
@@ -87,8 +87,9 @@ public class VillageScreen extends JPanel implements VillageScreenObserver{
 
     @Override
     public void updatePlayerRow(int row) {
-        if (row < lblPlayer.getY()) {
-            int rowAux = (lblPlayer.getY()-row);
+        int rowView = row * GlobalVariables.TILE_SIZE;
+        if (rowView < lblPlayer.getY()) {
+            int rowAux = (lblPlayer.getY()-rowView);
             threadWalk = new Thread(new Runnable() {
                 int count = 0;
                 @Override
@@ -103,14 +104,14 @@ public class VillageScreen extends JPanel implements VillageScreenObserver{
                         Thread.currentThread().interrupt();
                     }
                     finally {
-                        lblPlayer.setLocation(lblPlayer.getX(), row);
+                        lblPlayer.setLocation(lblPlayer.getX(), rowView);
                         isThreadWalkFree = true;
                     }
                 }
             });
             threadWalk.start();
-        } else if (row > lblPlayer.getY()) {
-            int rowAux = (row-lblPlayer.getY());
+        } else if (rowView > lblPlayer.getY()) {
+            int rowAux = (rowView-lblPlayer.getY());
             threadWalk = new Thread(new Runnable() {
                 int count = 0;
                 @Override
@@ -124,7 +125,7 @@ public class VillageScreen extends JPanel implements VillageScreenObserver{
                     } catch(InterruptedException e) {
                         Thread.currentThread().interrupt();
                     } finally {
-                        lblPlayer.setLocation(lblPlayer.getX(), row);
+                        lblPlayer.setLocation(lblPlayer.getX(), rowView);
                         isThreadWalkFree = true;
                     }
                 }
@@ -137,8 +138,9 @@ public class VillageScreen extends JPanel implements VillageScreenObserver{
     
     @Override
     public void updatePlayerColumn(int column) {
-        if (column < lblPlayer.getX()) {
-            int columnAux = (lblPlayer.getX()-column);
+        int columnView = column * GlobalVariables.TILE_SIZE;
+        if (columnView < lblPlayer.getX()) {
+            int columnAux = (lblPlayer.getX()-columnView);
             threadWalk = new Thread(new Runnable() {
                 int count = 0;
                 @Override
@@ -152,14 +154,14 @@ public class VillageScreen extends JPanel implements VillageScreenObserver{
                     } catch(InterruptedException e) {
                         Thread.currentThread().interrupt();
                     } finally {
-                        lblPlayer.setLocation(column, lblPlayer.getY());
+                        lblPlayer.setLocation(columnView, lblPlayer.getY());
                         isThreadWalkFree = true;
                     }
                 }
             });
             threadWalk.start();
-        } else if (column > lblPlayer.getX()) {
-            int columnAux = (column-lblPlayer.getX());
+        } else if (columnView > lblPlayer.getX()) {
+            int columnAux = (columnView-lblPlayer.getX());
             threadWalk = new Thread(new Runnable() {
                 int count = 0;
                 @Override
@@ -173,7 +175,7 @@ public class VillageScreen extends JPanel implements VillageScreenObserver{
                     } catch(InterruptedException e) {
                         Thread.currentThread().interrupt();
                     } finally {
-                        lblPlayer.setLocation(column, lblPlayer.getY());
+                        lblPlayer.setLocation(columnView, lblPlayer.getY());
                         isThreadWalkFree = true;
                     }
                 }

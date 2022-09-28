@@ -24,22 +24,22 @@ public class Player {
     
     public void walkUp() {
         walkState.changeToWalkStateUp();
-        row = (row - GlobalVariables.TILE_SIZE);
+        row = (row - 1);
     }
     
     public void walkDown() {
         walkState.changeToWalkStateDown();
-        row = (row + GlobalVariables.TILE_SIZE);
+        row = (row + 1);
     }
     
     public void walkLeft() {
         walkState.changeToWalkStateLeft();
-        column = (column - GlobalVariables.TILE_SIZE);
+        column = (column - 1);
     }
     
     public void walkRight() {
         walkState.changeToWalkStateRight();
-        column = (column + GlobalVariables.TILE_SIZE);
+        column = (column + 1);
     }
     
     public int getRow() {

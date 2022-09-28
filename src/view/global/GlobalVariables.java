@@ -4,8 +4,10 @@ import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.Properties;
 
 public class GlobalVariables {
     public static final int TILE_SIZE = (int) (Toolkit.getDefaultToolkit().getScreenSize().getWidth() * 0.02342606149341142);
@@ -25,6 +27,7 @@ public class GlobalVariables {
     public static final String PLAYER_ANIMATION_LEFT_KEY = "PLAYER_ANIMATION_LEFT";
     public static final String PLAYER_ANIMATION_RIGHT_KEY = "PLAYER_ANIMATION_RIGHT";
     public static final String FOUNTAIN_KEY = "FOUNTAIN_KEY";
+    public static final Properties VILLAGE_PROPERTIES;
 
     static {
         try {
@@ -40,6 +43,8 @@ public class GlobalVariables {
             IMAGES.put(PLAYER_ANIMATION_LEFT_KEY, new ImageIcon(new ImageIcon("./src/view/assets/images/player_fem/gif/amelia_left_run.gif").getImage().getScaledInstance(TILE_SIZE, TILE_SIZE*2, Image.SCALE_DEFAULT)));
             IMAGES.put(PLAYER_ANIMATION_RIGHT_KEY, new ImageIcon(new ImageIcon("./src/view/assets/images/player_fem/gif/amelia_right_run.gif").getImage().getScaledInstance(TILE_SIZE, TILE_SIZE*2, Image.SCALE_DEFAULT)));
             IMAGES.put(FOUNTAIN_KEY, new ImageIcon(new ImageIcon("./src/view/assets/images/fountain.gif").getImage().getScaledInstance(TILE_SIZE*3, TILE_SIZE*3, Image.SCALE_DEFAULT)));
+            VILLAGE_PROPERTIES = new Properties();
+            VILLAGE_PROPERTIES.load(new FileInputStream(new File("./src/mapsConfig/village.properties")));
         } catch(IOException | FontFormatException e) {
             throw new RuntimeException(e);
         }
