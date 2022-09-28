@@ -8,13 +8,12 @@ import javax.swing.*;
 import java.awt.*;
 
 
-public class InitialScreen extends JLabel {
+public class InitialScreen extends JPanel {
     
     InitialScreenController controller;
     private Button btnPlay;
     
     public InitialScreen() {
-        super(new ImageIcon(GlobalVariables.IMAGES.get(GlobalVariables.INITIAL_SCREEN_MAP_KEY)));
         controller = new InitialScreenController();
         initialize();
     }
@@ -40,6 +39,11 @@ public class InitialScreen extends JLabel {
     }
     
     private void navigateToVillageScreen() {
-        controller.navigateToVillageScreen(getRootPane().getParent());
+        controller.navigateToVillageScreen(getParent().getParent().getParent());
+    }
+    
+    @Override
+    protected void paintComponent(Graphics g) {
+        g.drawImage(GlobalVariables.IMAGES.get(GlobalVariables.INITIAL_SCREEN_MAP_KEY).getImage(), 0, 0, null);
     }
 }

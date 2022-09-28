@@ -3,7 +3,7 @@ package model;
 import java.util.Iterator;
 import java.util.LinkedList;
 
-public class InteractiveCollisionObject extends CollisionObjectWithImagem {
+public class InteractiveCollisionObject extends CollisionObjectWithImage {
     private final LinkedList<String> MESSAGES;
     private Iterator iterator;
     
