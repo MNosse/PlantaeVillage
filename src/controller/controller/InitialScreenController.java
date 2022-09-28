@@ -12,13 +12,10 @@ import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
-;
-
 public class InitialScreenController {
     
     public void navigateToVillageScreen(Container container) {
         GameFrameObserver gameFrame = (GameFrameObserver) container;
         gameFrame.navigateToVillageScreen();
     }
-    
 }

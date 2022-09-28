@@ -1,6 +1,7 @@
 package controller.obsever;
 
 public interface VillageScreenObserver {
-    void updateLabelPlayer(String image);
-    void updatePositionPlayer();
+    void updatePlayerImage(String imageKey);
+    void updatePlayerRow(int row);
+    void updatePlayerColumn(int column);
 }
