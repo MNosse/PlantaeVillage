@@ -1,44 +1,80 @@
 package controller.controller;
 
+import controller.obsever.GameFrameObserver;
 import controller.obsever.VillageScreenObserver;
-import model.CollisionObject;
-import model.Map;
-import model.Player;
-import view.global.GlobalVariables;
-import java.util.ArrayList;
-import java.util.List;
+import model.*;
+import global.GlobalVariables;
+
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.Properties;
 
 public class VillageScreenController {
     
     private VillageScreenObserver observer;
     private Map map;
-    private List<CollisionObject> collisionObjects = new ArrayList<>();
+    private boolean isTeleportEnabled;
+    private final static TileContent[][] VILLAGE_TILES_CONTENT = new TileContent[21][39];
+    private final static java.util.Map<String, Interactive> INTERACTIVES = new HashMap<>();
+    private final static java.util.Map<String, Teleport> TELEPORTS = new HashMap<>();
+    
+    //INITIALIZE STATIC ITENS
+    static {
+        try {
+            //TILE CONTENT
+            Properties properties = new Properties();
+            properties.load(new FileInputStream("./src/global/village.properties"));
+            for(int row = 0; row < 21; row++) {
+                for(int column = 0; column < 39; column++) {
+                    try {
+                        VILLAGE_TILES_CONTENT[row][column] = TileContent.valueOf(properties.getProperty(row + "x" + column));
+                    } catch(IllegalArgumentException e) {
+                        VILLAGE_TILES_CONTENT[row][column] = TileContent.EMPTY;
+                    }
+                }
+            }
+            //INTERACTIVES
+            INTERACTIVES.put("16x31", new Interactive(16, 31, new LinkedList<>(Arrays.asList("Oi", "Tchau"))));
+            //TELEPORTS
+            TELEPORTS.put("9x5", new Teleport(9, 5, "navigateToHouseScreen"));
+            TELEPORTS.put("9x33", new Teleport(9, 33, "navigateToMarketScreen"));
+            TELEPORTS.put("16x24", new Teleport(16, 24, "navigateToTrailerScreen"));
+        } catch(IOException e) {
+            System.exit(0);
+        }
+    }
     
     public VillageScreenController(VillageScreenObserver observer) {
         this.observer = observer;
-        map = new Map(GlobalVariables.SCREEN_HEIGHT, GlobalVariables.SCREEN_WIDTH);
-        map.setPlayer(new Player(GlobalVariables.TILE_SIZE*17, GlobalVariables.TILE_SIZE*19));
-        collisionObjects.add(new CollisionObject(0, 0, GlobalVariables.TILE_SIZE*2, GlobalVariables.TILE_SIZE*39));
-        collisionObjects.add(new CollisionObject(GlobalVariables.TILE_SIZE*19, 0, GlobalVariables.TILE_SIZE*2, GlobalVariables.TILE_SIZE*39));
-        collisionObjects.add(new CollisionObject(0, 0, GlobalVariables.TILE_SIZE*21, GlobalVariables.TILE_SIZE*2));
-        collisionObjects.add(new CollisionObject(0, GlobalVariables.TILE_SIZE*37, GlobalVariables.TILE_SIZE*21, GlobalVariables.TILE_SIZE*2));
-        collisionObjects.add(new CollisionObject(GlobalVariables.TILE_SIZE*2, GlobalVariables.TILE_SIZE*3, GlobalVariables.TILE_SIZE*8, GlobalVariables.TILE_SIZE*2));
-        collisionObjects.add(new CollisionObject(GlobalVariables.TILE_SIZE*2, GlobalVariables.TILE_SIZE*5, GlobalVariables.TILE_SIZE*6, GlobalVariables.TILE_SIZE));
-        collisionObjects.add(new CollisionObject(GlobalVariables.TILE_SIZE*2, GlobalVariables.TILE_SIZE*6, GlobalVariables.TILE_SIZE*8, GlobalVariables.TILE_SIZE*3));
-        collisionObjects.add(new CollisionObject(0, GlobalVariables.TILE_SIZE*9, GlobalVariables.TILE_SIZE*9, GlobalVariables.TILE_SIZE*3));
-        collisionObjects.add(new CollisionObject(0, GlobalVariables.TILE_SIZE*12, GlobalVariables.TILE_SIZE*8, GlobalVariables.TILE_SIZE));
-        collisionObjects.add(new CollisionObject(GlobalVariables.TILE_SIZE*2, GlobalVariables.TILE_SIZE*13, GlobalVariables.TILE_SIZE, GlobalVariables.TILE_SIZE*13));
-        collisionObjects.add(new CollisionObject(GlobalVariables.TILE_SIZE*3, GlobalVariables.TILE_SIZE*14, GlobalVariables.TILE_SIZE, GlobalVariables.TILE_SIZE*3));
-        collisionObjects.add(new CollisionObject(GlobalVariables.TILE_SIZE*3, GlobalVariables.TILE_SIZE*18, GlobalVariables.TILE_SIZE, GlobalVariables.TILE_SIZE*3));
-        collisionObjects.add(new CollisionObject(GlobalVariables.TILE_SIZE*3, GlobalVariables.TILE_SIZE*22, GlobalVariables.TILE_SIZE, GlobalVariables.TILE_SIZE*3));
-        collisionObjects.add(new CollisionObject(0, GlobalVariables.TILE_SIZE*26, GlobalVariables.TILE_SIZE*8, GlobalVariables.TILE_SIZE));
-        collisionObjects.add(new CollisionObject(0, GlobalVariables.TILE_SIZE*27, GlobalVariables.TILE_SIZE*9, GlobalVariables.TILE_SIZE*3));
-        collisionObjects.add(new CollisionObject(0, GlobalVariables.TILE_SIZE*30, GlobalVariables.TILE_SIZE*8, GlobalVariables.TILE_SIZE*7));
-        collisionObjects.add(new CollisionObject(GlobalVariables.TILE_SIZE*8, GlobalVariables.TILE_SIZE*30, GlobalVariables.TILE_SIZE*2, GlobalVariables.TILE_SIZE*2));
-        collisionObjects.add(new CollisionObject(GlobalVariables.TILE_SIZE*8, GlobalVariables.TILE_SIZE*32, GlobalVariables.TILE_SIZE, GlobalVariables.TILE_SIZE));
-        collisionObjects.add(new CollisionObject(GlobalVariables.TILE_SIZE*8, GlobalVariables.TILE_SIZE*34, GlobalVariables.TILE_SIZE, GlobalVariables.TILE_SIZE));
-        collisionObjects.add(new CollisionObject(GlobalVariables.TILE_SIZE*8, GlobalVariables.TILE_SIZE*35, GlobalVariables.TILE_SIZE*2, GlobalVariables.TILE_SIZE*2));
-        map.setCollisionObjects(collisionObjects);
+        map = new Map(GlobalVariables.SCREEN_HEIGHT, GlobalVariables.SCREEN_WIDTH, VILLAGE_TILES_CONTENT, INTERACTIVES, TELEPORTS);
+        map.setPlayer(new Player(17, 19));
+        isTeleportEnabled = false;
+    }
+    
+    public VillageScreenController(VillageScreenObserver observer, int plawerRow, int playerColumn) {
+        this.observer = observer;
+        map = new Map(GlobalVariables.SCREEN_HEIGHT, GlobalVariables.SCREEN_WIDTH, VILLAGE_TILES_CONTENT, INTERACTIVES, TELEPORTS);
+        map.setPlayer(new Player(plawerRow, playerColumn));
+        map.getPlayer().setWalkState(new WalkStateDown(map.getPlayer()));
+        isTeleportEnabled = false;
+    }
+    
+    //Chamada reflexiva
+    public void navigateToHouseScreen(GameFrameObserver gameFrame) {
+        gameFrame.navigateToHouseScreen();
+    }
+    
+    //Chamada reflexiva
+    public void navigateToMarketScreen(GameFrameObserver gameFrame) {
+                gameFrame.navigateToMarketScreen();
+    }
+    
+    //Chamada reflexiva
+    public void navigateToTrailerScreen(GameFrameObserver gameFrame) {
+        gameFrame.navigateToTrailerScreen();
     }
     
     public int getPlayerRow() {
@@ -58,106 +94,78 @@ public class VillageScreenController {
     }
     
     public void walkUp() {
-        int rowAux = map.getPlayer().getRow();
-        map.getPlayer().walkUp();
-        observer.updatePlayerImage(getPlayerImageAnimationName());
-        if (!hasObjectUp(rowAux, map.getPlayer().getColumn())) {
-            observer.updatePlayerRow(map.getPlayer().getRow());
-        } else {
-            map.getPlayer().setRow(rowAux);
-            observer.updatePlayerImage(getPlayerImageIdleName());
-            observer.updatePlayerRow(map.getPlayer().getRow());
+        Player player = map.getPlayer();
+        int row = player.getRow();
+        int column = player.getColumn();
+        player.changeToWalkStateUp();
+        observer.updatePlayerImage(getPlayerImageIdleName());
+        if (row > 0) {
+            if(!hasObject(row-1, column)) {
+                player.walkUp();
+                observer.updatePlayerRowUp(player.getRow());
+            }
         }
     }
     
     public void walkDown() {
-        int rowAux = map.getPlayer().getRow();
-        map.getPlayer().walkDown();
-        observer.updatePlayerImage(getPlayerImageAnimationName());
-        if (!hasObjectDown(rowAux, map.getPlayer().getColumn())) {
-            observer.updatePlayerRow(map.getPlayer().getRow());
-        } else {
-            map.getPlayer().setRow(rowAux);
-            observer.updatePlayerImage(getPlayerImageIdleName());
-            observer.updatePlayerRow(map.getPlayer().getRow());
+        Player player = map.getPlayer();
+        int row = player.getRow();
+        int column = player.getColumn();
+        player.changeToWalkStateDown();
+        observer.updatePlayerImage(getPlayerImageIdleName());
+        if (row < map.getTileContents().length-1) {
+            if(!hasObject(row+1, column)) {
+                player.walkDown();
+                observer.updatePlayerRowDown(player.getRow());
+            }
         }
     }
     
     public void walkLeft() {
-        int columnAux = map.getPlayer().getColumn();
-        map.getPlayer().walkLeft();
-        observer.updatePlayerImage(getPlayerImageAnimationName());
-        if (!hasObjectLeft(map.getPlayer().getRow(), columnAux)) {
-            observer.updatePlayerColumn(map.getPlayer().getColumn());
-        } else {
-            map.getPlayer().setColumn(columnAux);
-            observer.updatePlayerImage(getPlayerImageIdleName());
-            observer.updatePlayerColumn(map.getPlayer().getColumn());
+        Player player = map.getPlayer();
+        int row = player.getRow();
+        int column = player.getColumn();
+        player.changeToWalkStateLeft();
+        observer.updatePlayerImage(getPlayerImageIdleName());
+        if (column > 0) {
+            if(!hasObject(row, column-1)) {
+                player.walkLeft();
+                observer.updatePlayerColumnLeft(player.getColumn());
+            }
         }
     }
     
     public void walkRight() {
-        int columnAux = map.getPlayer().getColumn();
-        map.getPlayer().walkRight();
-        observer.updatePlayerImage(getPlayerImageAnimationName());
-        if (!hasObjectRight(map.getPlayer().getRow(), columnAux)) {
-            observer.updatePlayerColumn(map.getPlayer().getColumn());
-        } else {
-            map.getPlayer().setColumn(columnAux);
-            observer.updatePlayerImage(getPlayerImageIdleName());
-            observer.updatePlayerColumn(map.getPlayer().getColumn());
+        Player player = map.getPlayer();
+        int row = player.getRow();
+        int column = player.getColumn();
+        player.changeToWalkStateRight();
+        observer.updatePlayerImage(getPlayerImageIdleName());
+        if (column < map.getTileContents()[0].length-1) {
+            if(!hasObject(row, column+1)) {
+                player.walkRight();
+                observer.updatePlayerColumnRight(player.getColumn());
+            }
         }
     }
     
-    private boolean hasObjectUp(int row, int column) {
-        for (CollisionObject l : collisionObjects) {
-            if (l.getCOLUMN() <= column) {
-                if (l.getCOLUMN() + l.getWIDTH() > column) {
-                    if ((l.getROW() + l.getHEIGHT()) == (row + GlobalVariables.TILE_SIZE)) {
-                        return true;
-                    }
-                }
+    private boolean hasObject(int row, int column) {
+        if(map.getTileContents()[row][column].equals(TileContent.EMPTY)) {
+            if (isTeleportEnabled) {
+                observer.disableTeleport();
+                isTeleportEnabled = false;
             }
+            return false;
         }
-        return false;
-    }
-    
-    private boolean hasObjectDown(int row, int column) {
-        for (CollisionObject l : collisionObjects) {
-            if (l.getCOLUMN() <= column) {
-                if (l.getCOLUMN() + l.getWIDTH() > column) {
-                    if (l.getROW() == (row + GlobalVariables.TILE_SIZE*2)) {
-                        return true;
-                    }
-                }
-            }
+        if (map.getTileContents()[row][column].equals(TileContent.TELEPORT)) {
+            Teleport teleport = TELEPORTS.get(row+"x"+column);
+            observer.enableTeleport(teleport.getTELEPORT_METHOD_NAME(), row-2, column);
+            isTeleportEnabled = true;
+            return false;
         }
-        return false;
-    }
-    
-    private boolean hasObjectLeft(int row, int column) {
-        for (CollisionObject l : collisionObjects) {
-            if (l.getROW() <= (row + GlobalVariables.TILE_SIZE)) {
-                if (l.getROW() + l.getHEIGHT() > (row + GlobalVariables.TILE_SIZE)) {
-                    if (l.getCOLUMN() + l.getWIDTH() == column) {
-                        return true;
-                    }
-                }
-            }
+        else if (map.getTileContents()[row][column].equals(TileContent.INTERACTIVE)) {
+            observer.updatePlayerImage(GlobalVariables.PLAYER_ANIMATION_LEFT_KEY);
         }
-        return false;
-    }
-    
-    private boolean hasObjectRight(int row, int column) {
-        for (CollisionObject l : collisionObjects) {
-            if (l.getROW() <= (row + GlobalVariables.TILE_SIZE)) {
-                if (l.getROW() + l.getHEIGHT() > (row + GlobalVariables.TILE_SIZE)) {
-                    if (l.getCOLUMN() == (column + GlobalVariables.TILE_SIZE)) {
-                        return true;
-                    }
-                }
-            }
-        }
-        return false;
+        return true;
     }
 }
