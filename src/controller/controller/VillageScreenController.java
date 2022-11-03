@@ -1,53 +1,80 @@
 package controller.controller;
 
+import controller.obsever.GameFrameObserver;
 import controller.obsever.VillageScreenObserver;
-import model.Interactive;
-import model.Map;
-import model.Player;
-import model.TileContent;
-import view.global.GlobalVariables;
+import model.*;
+import global.GlobalVariables;
 
-import java.io.File;
 import java.io.FileInputStream;
-import java.io.InputStreamReader;
-import java.util.ArrayList;
+import java.io.IOException;
+import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
+import java.util.LinkedList;
 import java.util.Properties;
 
 public class VillageScreenController {
     
     private VillageScreenObserver observer;
     private Map map;
+    private boolean isTeleportEnabled;
+    private final static TileContent[][] VILLAGE_TILES_CONTENT = new TileContent[21][39];
+    private final static java.util.Map<String, Interactive> INTERACTIVES = new HashMap<>();
+    private final static java.util.Map<String, Teleport> TELEPORTS = new HashMap<>();
+    
+    //INITIALIZE STATIC ITENS
+    static {
+        try {
+            //TILE CONTENT
+            Properties properties = new Properties();
+            properties.load(new FileInputStream("./src/global/village.properties"));
+            for(int row = 0; row < 21; row++) {
+                for(int column = 0; column < 39; column++) {
+                    try {
+                        VILLAGE_TILES_CONTENT[row][column] = TileContent.valueOf(properties.getProperty(row + "x" + column));
+                    } catch(IllegalArgumentException e) {
+                        VILLAGE_TILES_CONTENT[row][column] = TileContent.EMPTY;
+                    }
+                }
+            }
+            //INTERACTIVES
+            INTERACTIVES.put("16x31", new Interactive(16, 31, new LinkedList<>(Arrays.asList("Oi", "Tchau"))));
+            //TELEPORTS
+            TELEPORTS.put("9x5", new Teleport(9, 5, "navigateToHouseScreen"));
+            TELEPORTS.put("9x33", new Teleport(9, 33, "navigateToMarketScreen"));
+            TELEPORTS.put("16x24", new Teleport(16, 24, "navigateToTrailerScreen"));
+        } catch(IOException e) {
+            System.exit(0);
+        }
+    }
     
     public VillageScreenController(VillageScreenObserver observer) {
         this.observer = observer;
-        TileContent[][] tileContents = new TileContent[21][39];
-        for (int row = 0; row < 21; row++) {
-            for (int column = 0; column < 39; column++) {
-                TileContent tileContent = null;
-                String property = GlobalVariables.VILLAGE_PROPERTIES.getProperty(row+"x"+column);
-                switch(property) {
-                    case "EMPTY":
-                        tileContent = TileContent.EMPTY;
-                        break;
-                    case "COLLISION":
-                        tileContent = TileContent.COLLISION;
-                        break;
-                    case "INTERACTIVE":
-                        tileContent = TileContent.INTERACTIVE;
-                        break;
-                    default:
-                        tileContent = TileContent.EMPTY;
-                        break;
-                }
-                tileContents[row][column] = tileContent;
-            }
-        }
-        java.util.Map<String, Interactive> interactives = new HashMap<>();
-        
-        map = new Map(GlobalVariables.SCREEN_HEIGHT, GlobalVariables.SCREEN_WIDTH, tileContents, interactives);
+        map = new Map(GlobalVariables.SCREEN_HEIGHT, GlobalVariables.SCREEN_WIDTH, VILLAGE_TILES_CONTENT, INTERACTIVES, TELEPORTS);
         map.setPlayer(new Player(17, 19));
+        isTeleportEnabled = false;
+    }
+    
+    public VillageScreenController(VillageScreenObserver observer, int plawerRow, int playerColumn) {
+        this.observer = observer;
+        map = new Map(GlobalVariables.SCREEN_HEIGHT, GlobalVariables.SCREEN_WIDTH, VILLAGE_TILES_CONTENT, INTERACTIVES, TELEPORTS);
+        map.setPlayer(new Player(plawerRow, playerColumn));
+        map.getPlayer().setWalkState(new WalkStateDown(map.getPlayer()));
+        isTeleportEnabled = false;
+    }
+    
+    //Chamada reflexiva
+    public void navigateToHouseScreen(GameFrameObserver gameFrame) {
+        gameFrame.navigateToHouseScreen();
+    }
+    
+    //Chamada reflexiva
+    public void navigateToMarketScreen(GameFrameObserver gameFrame) {
+                gameFrame.navigateToMarketScreen();
+    }
+    
+    //Chamada reflexiva
+    public void navigateToTrailerScreen(GameFrameObserver gameFrame) {
+        gameFrame.navigateToTrailerScreen();
     }
     
     public int getPlayerRow() {
@@ -67,68 +94,77 @@ public class VillageScreenController {
     }
     
     public void walkUp() {
-        int rowAux = map.getPlayer().getRow();
-        if (rowAux > 0) {
-            map.getPlayer().walkUp();
-            observer.updatePlayerImage(getPlayerImageAnimationName());
-            if(!hasObject(rowAux, map.getPlayer().getColumn())) {
-                observer.updatePlayerRow(map.getPlayer().getRow());
-            } else {
-                map.getPlayer().setRow(rowAux);
-                observer.updatePlayerImage(getPlayerImageIdleName());
-                observer.updatePlayerRow(map.getPlayer().getRow());
+        Player player = map.getPlayer();
+        int row = player.getRow();
+        int column = player.getColumn();
+        player.changeToWalkStateUp();
+        observer.updatePlayerImage(getPlayerImageIdleName());
+        if (row > 0) {
+            if(!hasObject(row-1, column)) {
+                player.walkUp();
+                observer.updatePlayerRowUp(player.getRow());
             }
         }
     }
-
+    
     public void walkDown() {
-        int rowAux = map.getPlayer().getRow();
-        if (rowAux < map.getTileContents().length-1) {
-            map.getPlayer().walkDown();
-            observer.updatePlayerImage(getPlayerImageAnimationName());
-            if(!hasObject(rowAux, map.getPlayer().getColumn())) {
-                observer.updatePlayerRow(map.getPlayer().getRow());
-            } else {
-                map.getPlayer().setRow(rowAux);
-                observer.updatePlayerImage(getPlayerImageIdleName());
-                observer.updatePlayerRow(map.getPlayer().getRow());
+        Player player = map.getPlayer();
+        int row = player.getRow();
+        int column = player.getColumn();
+        player.changeToWalkStateDown();
+        observer.updatePlayerImage(getPlayerImageIdleName());
+        if (row < map.getTileContents().length-1) {
+            if(!hasObject(row+1, column)) {
+                player.walkDown();
+                observer.updatePlayerRowDown(player.getRow());
             }
         }
     }
-
+    
     public void walkLeft() {
-        int columnAux = map.getPlayer().getColumn();
-        if (columnAux > 0) {
-            map.getPlayer().walkLeft();
-            observer.updatePlayerImage(getPlayerImageAnimationName());
-            if(!hasObject(map.getPlayer().getRow(), columnAux)) {
-                observer.updatePlayerColumn(map.getPlayer().getColumn());
-            } else {
-                map.getPlayer().setColumn(columnAux);
-                observer.updatePlayerImage(getPlayerImageIdleName());
-                observer.updatePlayerColumn(map.getPlayer().getColumn());
+        Player player = map.getPlayer();
+        int row = player.getRow();
+        int column = player.getColumn();
+        player.changeToWalkStateLeft();
+        observer.updatePlayerImage(getPlayerImageIdleName());
+        if (column > 0) {
+            if(!hasObject(row, column-1)) {
+                player.walkLeft();
+                observer.updatePlayerColumnLeft(player.getColumn());
             }
         }
     }
-
+    
     public void walkRight() {
-        int columnAux = map.getPlayer().getColumn();
-        if (columnAux < map.getTileContents()[0].length-1) {
-            map.getPlayer().walkRight();
-            observer.updatePlayerImage(getPlayerImageAnimationName());
-            if(!hasObject(map.getPlayer().getRow(), columnAux)) {
-                observer.updatePlayerColumn(map.getPlayer().getColumn());
-            } else {
-                map.getPlayer().setColumn(columnAux);
-                observer.updatePlayerImage(getPlayerImageIdleName());
-                observer.updatePlayerColumn(map.getPlayer().getColumn());
+        Player player = map.getPlayer();
+        int row = player.getRow();
+        int column = player.getColumn();
+        player.changeToWalkStateRight();
+        observer.updatePlayerImage(getPlayerImageIdleName());
+        if (column < map.getTileContents()[0].length-1) {
+            if(!hasObject(row, column+1)) {
+                player.walkRight();
+                observer.updatePlayerColumnRight(player.getColumn());
             }
         }
     }
     
     private boolean hasObject(int row, int column) {
-        if (map.getTileContents()[row][column].equals(TileContent.EMPTY)) {
+        if(map.getTileContents()[row][column].equals(TileContent.EMPTY)) {
+            if (isTeleportEnabled) {
+                observer.disableTeleport();
+                isTeleportEnabled = false;
+            }
             return false;
+        }
+        if (map.getTileContents()[row][column].equals(TileContent.TELEPORT)) {
+            Teleport teleport = TELEPORTS.get(row+"x"+column);
+            observer.enableTeleport(teleport.getTELEPORT_METHOD_NAME(), row-2, column);
+            isTeleportEnabled = true;
+            return false;
+        }
+        else if (map.getTileContents()[row][column].equals(TileContent.INTERACTIVE)) {
+            observer.updatePlayerImage(GlobalVariables.PLAYER_ANIMATION_LEFT_KEY);
         }
         return true;
     }

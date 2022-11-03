@@ -1,6 +1,6 @@
 package model;
 
-import view.global.GlobalVariables;
+import global.GlobalVariables;
 
 public class WalkStateRight extends WalkState {
     

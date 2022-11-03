@@ -1,7 +1,5 @@
 package model;
 
-import view.global.GlobalVariables;
-
 public class Player {
     private int row;
     private int column;
@@ -22,23 +20,35 @@ public class Player {
         return walkState.getImageAnimationName();
     }
     
-    public void walkUp() {
+    public void changeToWalkStateUp() {
         walkState.changeToWalkStateUp();
+    }
+    
+    public void changeToWalkStateDown() {
+        walkState.changeToWalkStateDown();
+    }
+    
+    public void changeToWalkStateLeft() {
+        walkState.changeToWalkStateLeft();
+    }
+    
+    public void changeToWalkStateRight() {
+        walkState.changeToWalkStateRight();
+    }
+    
+    public void walkUp() {
         row = (row - 1);
     }
     
     public void walkDown() {
-        walkState.changeToWalkStateDown();
         row = (row + 1);
     }
     
     public void walkLeft() {
-        walkState.changeToWalkStateLeft();
         column = (column - 1);
     }
     
     public void walkRight() {
-        walkState.changeToWalkStateRight();
         column = (column + 1);
     }
     
@@ -66,7 +76,7 @@ public class Player {
         this.plant = plant;
     }
     
-    protected void setWalkState(WalkState walkState) {
+    public void setWalkState(WalkState walkState) {
         this.walkState = walkState;
     }
 }

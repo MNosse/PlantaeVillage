@@ -1,6 +1,6 @@
 package view.components;
 
-import view.global.GlobalVariables;
+import global.GlobalVariables;
 
 import javax.swing.*;
 import java.awt.*;

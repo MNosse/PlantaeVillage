@@ -2,6 +2,10 @@ package controller.obsever;
 
 public interface VillageScreenObserver {
     void updatePlayerImage(String imageKey);
-    void updatePlayerRow(int row);
-    void updatePlayerColumn(int column);
+    void updatePlayerRowUp(int row);
+    void updatePlayerRowDown(int row);
+    void updatePlayerColumnLeft(int column);
+    void updatePlayerColumnRight(int column);
+    void enableTeleport(String methodName, int row, int column);
+    void disableTeleport();
 }

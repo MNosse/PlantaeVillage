@@ -1,10 +1,11 @@
 package view.screen;
 
 import controller.controller.InitialScreenController;
+import controller.obsever.GameFrameObserver;
+import global.GlobalVariables;
 import view.components.Button;
-import view.global.GlobalVariables;
 
-import javax.swing.*;
+import javax.swing.JPanel;
 import java.awt.*;
 
 
@@ -24,22 +25,22 @@ public class InitialScreen extends JPanel {
         //CONSTRAINTS
         GridBagConstraints constraints = new GridBagConstraints();
         //JBUTTON PLAY
-        btnPlay = new Button((GlobalVariables.TILE_SIZE*5), (GlobalVariables.TILE_SIZE*2), GlobalVariables.TILE_SIZE, new Color(145, 9, 9), new Color(127, 7, 7), new Color(109, 5, 5), new Color(90, 2, 2));
+        btnPlay = new Button((GlobalVariables.TILE_SIZE * 5), (GlobalVariables.TILE_SIZE * 2), GlobalVariables.TILE_SIZE, new Color(145, 9, 9), new Color(127, 7, 7), new Color(109, 5, 5), new Color(90, 2, 2));
         //JLABEL BACKGROUND
         setLayout(layout);
         constraints.gridx = GridBagConstraints.RELATIVE;
-        constraints.insets = new Insets((GlobalVariables.TILE_SIZE*11), 0, 0, 0);
+        constraints.insets = new Insets((GlobalVariables.TILE_SIZE * 11), 0, 0, 0);
         add(btnPlay, constraints);
         setVisible(true);
         initializeActions();
     }
     
-    private void initializeActions(){
+    private void initializeActions() {
         btnPlay.addActionListener(event -> navigateToVillageScreen());
     }
     
     private void navigateToVillageScreen() {
-        controller.navigateToVillageScreen(getParent().getParent().getParent());
+        controller.navigateToVillageScreen((GameFrameObserver) getParent().getParent().getParent());
     }
     
     @Override
