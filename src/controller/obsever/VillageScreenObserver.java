@@ -6,6 +6,11 @@ public interface VillageScreenObserver {
     void updatePlayerRowDown(int row);
     void updatePlayerColumnLeft(int column);
     void updatePlayerColumnRight(int column);
-    void enableTeleport(String methodName, int row, int column);
+    void enableTeleport(int row, int column);
     void disableTeleport();
+    void enableInteractive(int row, int column);
+    void disableInteractive();
+    void openTest();
+    void openDialog();
+    void updateDialogMessage(String message);
 }

@@ -3,7 +3,7 @@ package view.screen;
 import controller.obsever.GameFrameObserver;
 import global.GlobalVariables;
 
-import javax.swing.JFrame;
+import javax.swing.*;
 
 public class GameFrame extends JFrame implements GameFrameObserver{
     
@@ -12,6 +12,7 @@ public class GameFrame extends JFrame implements GameFrameObserver{
     }
     
     private void initialize() {
+        //THIS
         setTitle("Plantae Village");
         int width = GlobalVariables.SCREEN_WIDTH;
         int height = GlobalVariables.SCREEN_HEIGHT;
@@ -33,6 +34,16 @@ public class GameFrame extends JFrame implements GameFrameObserver{
         repaint();
         houseScreen.setFocusable(true);
         houseScreen.requestFocusInWindow();
+    }
+    
+    @Override
+    public void navigateToInitialScreen() {
+        InitialScreen initialScreen = new InitialScreen();
+        setContentPane(initialScreen);
+        revalidate();
+        repaint();
+        initialScreen.setFocusable(true);
+        initialScreen.requestFocusInWindow();
     }
     
     @Override

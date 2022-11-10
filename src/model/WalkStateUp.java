@@ -10,12 +10,12 @@ public class WalkStateUp extends WalkState {
     
     @Override
     protected String getImageIdleName() {
-        return GlobalVariables.PLAYER_IDLE_TOP_KEY;
+        return GlobalVariables.PLAYER_IDLE_UP_KEY;
     }
     
     @Override
     protected String getImageAnimationName() {
-        return GlobalVariables.PLAYER_ANIMATION_TOP_KEY;
+        return GlobalVariables.PLAYER_WALKING_UP_KEY;
     }
     
     @Override

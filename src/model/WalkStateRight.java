@@ -15,7 +15,7 @@ public class WalkStateRight extends WalkState {
     
     @Override
     protected String getImageAnimationName() {
-        return GlobalVariables.PLAYER_ANIMATION_RIGHT_KEY;
+        return GlobalVariables.PLAYER_WALKING_RIGHT_KEY;
     }
     
     @Override

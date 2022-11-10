@@ -18,15 +18,15 @@ public class Button extends JButton {
     private Color borderColor1;
     private Color borderColor2;
     
-    public Button(int width, int height, int borderRadius, Color backgroundColor, Color backgroundColorOver, Color borderColor1, Color borderColor2) {
+    public Button(int width, int height, int borderRadius, Color backgroundColor, Color backgroundColorOver, Color borderColor1, Color borderColor2, String text, float fontSize) {
         setContentAreaFilled(false);
         setMinimumSize(new Dimension(width, height));
         setPreferredSize(new Dimension(width, height));
         setFocusPainted(false);
         setBorderPainted(false);
-        setFont(GlobalVariables.FONT_1.deriveFont(GlobalVariables.ONE_PIXEL_SIZE*25f));
+        setFont(GlobalVariables.FONT_3.deriveFont(GlobalVariables.ONE_PIXEL_SIZE*fontSize));
         setForeground(new Color(220, 220, 220));
-        setText("Jogar");
+        setText(text);
         
         this.width = width;
         this.height = height;

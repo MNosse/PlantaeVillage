@@ -3,6 +3,7 @@ package view.screen;
 import controller.controller.InitialScreenController;
 import controller.obsever.GameFrameObserver;
 import global.GlobalVariables;
+import model.Repository;
 import view.components.Button;
 
 import javax.swing.JPanel;
@@ -25,7 +26,7 @@ public class InitialScreen extends JPanel {
         //CONSTRAINTS
         GridBagConstraints constraints = new GridBagConstraints();
         //JBUTTON PLAY
-        btnPlay = new Button((GlobalVariables.TILE_SIZE * 5), (GlobalVariables.TILE_SIZE * 2), GlobalVariables.TILE_SIZE, new Color(145, 9, 9), new Color(127, 7, 7), new Color(109, 5, 5), new Color(90, 2, 2));
+        btnPlay = new Button((GlobalVariables.TILE_SIZE * 7), (GlobalVariables.TILE_SIZE * 2), GlobalVariables.TILE_SIZE, new Color(145, 9, 9), new Color(127, 7, 7), new Color(109, 5, 5), new Color(90, 2, 2), "Jogar", 30f);
         //JLABEL BACKGROUND
         setLayout(layout);
         constraints.gridx = GridBagConstraints.RELATIVE;
@@ -36,7 +37,10 @@ public class InitialScreen extends JPanel {
     }
     
     private void initializeActions() {
-        btnPlay.addActionListener(event -> navigateToVillageScreen());
+        btnPlay.addActionListener(event -> {
+            Repository.getInstance().initializeAttrs();
+            navigateToVillageScreen();
+        });
     }
     
     private void navigateToVillageScreen() {

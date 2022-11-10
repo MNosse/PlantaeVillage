@@ -7,14 +7,20 @@ import model.*;
 
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.Properties;
 
 public class HouseScreenController {
     
     private HouseScreenObserver observer;
     private Map map;
-    private boolean isTeleportEnabled;
+    private Teleport currentTeleport;
+    private Interactive currentInteractive;
+    private boolean firstInteraction;
     private final static TileContent[][] HOUSE_TILES_CONTENT = new TileContent[21][39];
     private final static java.util.Map<String, Interactive> INTERACTIVES = new HashMap<>();
     private final static java.util.Map<String, Teleport> TELEPORTS = new HashMap<>();
@@ -34,10 +40,6 @@ public class HouseScreenController {
                     }
                 }
             }
-            //INTERACTIVES
-//            INTERACTIVES.put("16x31", new Interactive(16, 31, new LinkedList<>(Arrays.asList("Oi", "Tchau"))));
-            //TELEPORTS
-            TELEPORTS.put("20x19", new Teleport(20, 19, "navigateToVillageScreen"));
         } catch(IOException e) {
             System.exit(0);
         }
@@ -47,7 +49,37 @@ public class HouseScreenController {
         this.observer = observer;
         map = new Map(GlobalVariables.SCREEN_HEIGHT, GlobalVariables.SCREEN_WIDTH, HOUSE_TILES_CONTENT, INTERACTIVES, TELEPORTS);
         map.setPlayer(new Player(20, 19));
-        isTeleportEnabled = false;
+        currentTeleport = null;
+        currentInteractive = null;
+        firstInteraction = true;
+        //INTERACTIVES
+        INTERACTIVES.put("13x20", new Interactive(13, 20, Repository.getInstance().getNpcLines(6)));
+        INTERACTIVES.put("13x21", new Interactive(13, 21, Repository.getInstance().getNpcLines(7)));
+        //TELEPORTS
+        TELEPORTS.put("20x19", new Teleport(20, 19, "navigateToVillageScreen"));
+    }
+    
+    public void teleport(GameFrameObserver gameFrameObserver) {
+        try {
+            Method method = HouseScreenController.class.getDeclaredMethod(currentTeleport.getTELEPORT_METHOD_NAME(), GameFrameObserver.class);
+            method.invoke(this, gameFrameObserver);
+        } catch(NoSuchMethodException | IllegalAccessException | InvocationTargetException ex) {
+            return;
+        }
+    }
+    
+    public void interact() {
+        if (currentInteractive != null) {
+            if (firstInteraction) {
+                observer.openDialog();
+                firstInteraction = false;
+            }
+            String message = currentInteractive.readNextLine();
+            observer.updateDialogMessage(message);
+            if (message.isEmpty()) {
+                firstInteraction = true;
+            }
+        }
     }
     
     //Chamada reflexiva
@@ -129,20 +161,25 @@ public class HouseScreenController {
     
     private boolean hasObject(int row, int column) {
         if(map.getTileContents()[row][column].equals(TileContent.EMPTY)) {
-            if (isTeleportEnabled) {
+            if (currentTeleport != null) {
                 observer.disableTeleport();
-                isTeleportEnabled = false;
+                currentTeleport = null;
+            }
+            if (currentInteractive != null) {
+                observer.disableInteractive();
+                currentInteractive = null;
             }
             return false;
         }
         if (map.getTileContents()[row][column].equals(TileContent.TELEPORT)) {
-            Teleport teleport = TELEPORTS.get(row+"x"+column);
-            observer.enableTeleport(teleport.getTELEPORT_METHOD_NAME(), row-2, column);
-            isTeleportEnabled = true;
+            currentTeleport = TELEPORTS.get(row+"x"+column);
+            observer.enableTeleport(row-2, column);
             return false;
         }
         else if (map.getTileContents()[row][column].equals(TileContent.INTERACTIVE)) {
-            observer.updatePlayerImage(GlobalVariables.PLAYER_ANIMATION_LEFT_KEY);
+            currentInteractive = INTERACTIVES.get(row+"x"+column);
+            observer.enableInteractive(row-2, column);
+            return false;
         }
         return true;
     }

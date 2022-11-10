@@ -4,26 +4,29 @@ import controller.controller.HouseScreenController;
 import controller.obsever.GameFrameObserver;
 import controller.obsever.HouseScreenObserver;
 import global.GlobalVariables;
+import model.Repository;
+import view.components.Button;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 
 
 public class HouseScreen extends JPanel implements HouseScreenObserver {
     
     private HouseScreenController controller;
-    private JLabel lblPlayer;
-    private JLabel lblTeleport;
-    private String methodNameTeleport;
+    private JButton btnQuit, btnContinue;
+    private JLabel lblPlayer, lblTeleport, lblInteractive, lblDialog, lblPause;
+    private JTextArea txaDialogText;
+    private boolean interactiveEnabled, teleportEnabled;
     private Thread threadWalk;
     
     public HouseScreen() {
         controller = new HouseScreenController(this);
         threadWalk = new Thread();
+        interactiveEnabled = false;
+        teleportEnabled = false;
         initialize();
     }
     
@@ -31,13 +34,62 @@ public class HouseScreen extends JPanel implements HouseScreenObserver {
         //JLABEL lblPlayer
         lblPlayer = new JLabel(GlobalVariables.IMAGES.get(controller.getPlayerImageIdleName()));
         lblPlayer.setBounds(controller.getPlayerColumn()*GlobalVariables.TILE_SIZE, (controller.getPlayerRow()-1)*GlobalVariables.TILE_SIZE, GlobalVariables.TILE_SIZE, GlobalVariables.TILE_SIZE*2);
+        //JLABEL lblNpc1
+        JLabel lblNpc1 = new JLabel(GlobalVariables.IMAGES.get(GlobalVariables.NPC1_KEY));
+        lblNpc1.setBounds(GlobalVariables.TILE_SIZE*21, GlobalVariables.TILE_SIZE*11, GlobalVariables.TILE_SIZE, GlobalVariables.TILE_SIZE*2);
+        //JLABEL lblNpc2
+        JLabel lblNpc2 = new JLabel(GlobalVariables.IMAGES.get(GlobalVariables.NPC2_KEY));
+        lblNpc2.setBounds(GlobalVariables.TILE_SIZE*20, GlobalVariables.TILE_SIZE*11, GlobalVariables.TILE_SIZE, GlobalVariables.TILE_SIZE*2);
         //JLABEL lblTeleport
         lblTeleport = new JLabel(GlobalVariables.IMAGES.get(GlobalVariables.TELEPORT_ICON_KEY));
         lblTeleport.setBounds(0, 0, 0, 0);
+        //JLABEL lblInteractive
+        lblInteractive = new JLabel(GlobalVariables.IMAGES.get(GlobalVariables.INTERACTIVE_ICON_KEY));
+        lblTeleport.setBounds(0, 0, 0, 0);
+        //JTEXTAREA txaDialogText
+        txaDialogText = new JTextArea();
+        txaDialogText.setFont(GlobalVariables.FONT_3.deriveFont(GlobalVariables.ONE_PIXEL_SIZE*17f));
+        txaDialogText.setLineWrap(true);
+        txaDialogText.setWrapStyleWord(true);
+        txaDialogText.setVisible(true);
+        txaDialogText.setEditable(false);
+        txaDialogText.setMinimumSize(new Dimension((GlobalVariables.TILE_SIZE*12), (GlobalVariables.TILE_SIZE*2)));
+        txaDialogText.setPreferredSize(new Dimension((GlobalVariables.TILE_SIZE*12), (GlobalVariables.TILE_SIZE*2)));
+        //JLABEL lblDialog
+        lblDialog = new JLabel();
+        lblDialog.setVisible(true);
+        lblDialog.setBounds(GlobalVariables.TILE_SIZE*13, GlobalVariables.TILE_SIZE, GlobalVariables.TILE_SIZE*13, GlobalVariables.TILE_SIZE*3);
+        lblDialog.setIcon(GlobalVariables.IMAGES.get(GlobalVariables.DIALOG_BOX_KEY));
+        lblDialog.setLayout(new GridBagLayout());
+        lblDialog.setVisible(false);
+        lblDialog.add(txaDialogText, new GridBagConstraints());
+        //JLabel lblPlant
+        JLabel lblPlant = new JLabel(GlobalVariables.IMAGES.get(Repository.getInstance().getPlant().getIMAGE_NAME()));
+        //JBUTTON btnContinue
+        btnContinue = new view.components.Button((GlobalVariables.TILE_SIZE * 7), (GlobalVariables.TILE_SIZE * 2), GlobalVariables.TILE_SIZE, new Color(145, 9, 9), new Color(127, 7, 7), new Color(109, 5, 5), new Color(90, 2, 2), "Continuar", 30f);
+        //JBUTTON btnQuit
+        btnQuit = new Button((GlobalVariables.TILE_SIZE * 7), (GlobalVariables.TILE_SIZE * 2), GlobalVariables.TILE_SIZE, new Color(145, 9, 9), new Color(127, 7, 7), new Color(109, 5, 5), new Color(90, 2, 2), "Sair", 30f);
+        //JLABEL lblPause;
+        GridBagConstraints constraints = new GridBagConstraints();
+        lblPause = new JLabel(GlobalVariables.IMAGES.get(GlobalVariables.PAUSE_SCREEN_MAP_KEY));
+        lblPause.setBounds(0, 0, GlobalVariables.SCREEN_WIDTH, GlobalVariables.SCREEN_HEIGHT);
+        lblPause.setLayout(new GridBagLayout());
+        lblPause.add(lblPlant);
+        constraints.insets = new Insets(GlobalVariables.TILE_SIZE,  0, 0, 0);
+        constraints.gridy = 1;
+        lblPause.add(btnContinue, constraints);
+        constraints.gridy = 2;
+        lblPause.add(btnQuit, constraints);
+        lblPause.setVisible(false);
         //THIS
         setLayout(null);
+        add(lblPause);
         add(lblPlayer);
+        add(lblDialog);
         add(lblTeleport);
+        add(lblInteractive);
+        add(lblNpc1);
+        add(lblNpc2);
         initializeActions();
     }
     
@@ -45,32 +97,34 @@ public class HouseScreen extends JPanel implements HouseScreenObserver {
         addKeyListener(new KeyAdapter() {
             @Override
             public void keyPressed(KeyEvent e) {
-                if (!threadWalk.isAlive()) {
-                    if (e.getKeyCode() == KeyEvent.VK_UP || e.getKeyCode() == KeyEvent.VK_W) {
-                        controller.walkUp();
-                    }
-                    else if (e.getKeyCode() == KeyEvent.VK_DOWN || e.getKeyCode() == KeyEvent.VK_S) {
-                        controller.walkDown();
-                    }
-                    else if (e.getKeyCode() == KeyEvent.VK_LEFT || e.getKeyCode() == KeyEvent.VK_A) {
-                        controller.walkLeft();
-                    }
-                    else if (e.getKeyCode() == KeyEvent.VK_RIGHT || e.getKeyCode() == KeyEvent.VK_D) {
-                        controller.walkRight();
-                    }
-                    else if (e.getKeyCode() == KeyEvent.VK_ENTER) {
-                        if (methodNameTeleport != null && !methodNameTeleport.isEmpty()) {
-                            try {
-                                Method method = HouseScreenController.class.getDeclaredMethod(methodNameTeleport, GameFrameObserver.class);
-                                method.invoke(controller, (GameFrameObserver) getParent().getParent().getParent());
-                            } catch(NoSuchMethodException | IllegalAccessException | InvocationTargetException ex) {
-                                return;
+                GameFrameObserver gameFrameObserver = (GameFrameObserver) getParent().getParent().getParent();
+                if (!lblPause.isVisible()) {
+                    if(!threadWalk.isAlive()) {
+                        if(!lblDialog.isVisible()) {
+                            if(e.getKeyCode() == KeyEvent.VK_UP || e.getKeyCode() == KeyEvent.VK_W) {
+                                controller.walkUp();
+                            } else if(e.getKeyCode() == KeyEvent.VK_DOWN || e.getKeyCode() == KeyEvent.VK_S) {
+                                controller.walkDown();
+                            } else if(e.getKeyCode() == KeyEvent.VK_LEFT || e.getKeyCode() == KeyEvent.VK_A) {
+                                controller.walkLeft();
+                            } else if(e.getKeyCode() == KeyEvent.VK_RIGHT || e.getKeyCode() == KeyEvent.VK_D) {
+                                controller.walkRight();
+                            }
+                        }
+                        if(e.getKeyCode() == KeyEvent.VK_ENTER) {
+                            if(teleportEnabled) {
+                                controller.teleport(gameFrameObserver);
+                            } else if(interactiveEnabled) {
+                                controller.interact();
                             }
                         }
                     }
                 }
+                if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
+                    lblPause.setVisible(true);
+                }
             }
-    
+        
             @Override
             public void keyReleased(KeyEvent e) {
                 new Thread(() -> {
@@ -83,6 +137,15 @@ public class HouseScreen extends JPanel implements HouseScreenObserver {
                     }
                 }).start();
             }
+        });
+    
+        btnContinue.addActionListener(click -> {
+            lblPause.setVisible(false);
+        });
+    
+        btnQuit.addActionListener(click -> {
+            GameFrameObserver gameFrameObserver = (GameFrameObserver) getParent().getParent().getParent();
+            gameFrameObserver.navigateToInitialScreen();
         });
     }
 
@@ -176,19 +239,51 @@ public class HouseScreen extends JPanel implements HouseScreenObserver {
     }
     
     @Override
-    public void enableTeleport(String methodName, int row, int column) {
+    public void enableTeleport(int row, int column) {
         lblTeleport.setBounds(GlobalVariables.TILE_SIZE*column, GlobalVariables.TILE_SIZE*row, GlobalVariables.TILE_SIZE, GlobalVariables.TILE_SIZE);
-        methodNameTeleport = methodName;
+        teleportEnabled = true;
     }
     
     @Override
     public void disableTeleport() {
         lblTeleport.setBounds(0, 0, 0, 0);
-        methodNameTeleport = null;
+        teleportEnabled = false;
+    }
+    
+    @Override
+    public void enableInteractive(int row, int column) {
+        lblInteractive.setBounds(GlobalVariables.TILE_SIZE*column, GlobalVariables.TILE_SIZE*row, GlobalVariables.TILE_SIZE, GlobalVariables.TILE_SIZE);
+        interactiveEnabled = true;
+    }
+    
+    @Override
+    public void disableInteractive() {
+        lblInteractive.setBounds(0, 0, 0, 0);
+        interactiveEnabled = false;
+    }
+    
+    @Override
+    public void openDialog() {
+        int row = 1;
+        if (lblPlayer.getY()/GlobalVariables.TILE_SIZE < 10) {
+            row = 17;
+        }
+        lblDialog.setBounds(GlobalVariables.TILE_SIZE*13, GlobalVariables.TILE_SIZE*row, GlobalVariables.TILE_SIZE*13, GlobalVariables.TILE_SIZE*3);
+        lblDialog.setVisible(true);
+    }
+    
+    @Override
+    public void updateDialogMessage(String message) {
+        txaDialogText.setText(message);
+        if (!message.isEmpty()) {
+            lblDialog.setText(message);
+        } else {
+            lblDialog.setVisible(false);
+        }
     }
     
     @Override
     protected void paintComponent(Graphics g) {
-        g.drawImage(GlobalVariables.IMAGES.get(GlobalVariables.MARKET_SCREEN_MAP_KEY).getImage(), 0, 0, null);
+        g.drawImage(GlobalVariables.IMAGES.get(GlobalVariables.HOUSE_SCREEN_MAP_KEY).getImage(), 0, 0, null);
     }
 }

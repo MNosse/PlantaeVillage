@@ -4,30 +4,32 @@ public class Plant {
     private final String IMAGE_NAME;
     private final String PLANT_GROUP;
     private final boolean IS_VASCULAR;
-    private final String REPRODUCTION_TYPE;
-    private final boolean WATER_DEPENDENT_REPRODUCTION;
+    private final String DEPENDENT_TO_REPRODUCTION;
     private final String MAIN_LIFE_CYCLE;
     private final boolean HAS_ROOTS;
     private final boolean HAS_STEM;
     private final boolean HAS_LEAVES;
+    private final boolean HAS_SPORES;
     private final boolean HAS_SEED;
     private final boolean HAS_FLOWER;
+    private final boolean HAS_FRUIT;
     private final String WHERE_FIND_IT;
     
-    public Plant(String imageName, String plantGroup, boolean isVascular, String reproductionType,
-                 boolean waterDependentReproduction, String mainLifeCycle, boolean hasRoots, boolean hasStem,
-                 boolean hasLeaves, boolean hasSeed, boolean hasFlower, String whereFindIt) {
+    public Plant(String imageName, String plantGroup, boolean isVascular, String dependentToReproduction,
+                 String mainLifeCycle, boolean hasRoots, boolean hasStem,
+                 boolean hasLeaves, boolean hasSpores, boolean hasSeed, boolean hasFlower, boolean hasFruit, String whereFindIt) {
         IMAGE_NAME = imageName;
         PLANT_GROUP = plantGroup;
         IS_VASCULAR = isVascular;
-        REPRODUCTION_TYPE = reproductionType;
-        WATER_DEPENDENT_REPRODUCTION = waterDependentReproduction;
+        DEPENDENT_TO_REPRODUCTION = dependentToReproduction;
         MAIN_LIFE_CYCLE = mainLifeCycle;
         HAS_ROOTS = hasRoots;
         HAS_STEM = hasStem;
         HAS_LEAVES = hasLeaves;
+        HAS_SPORES = hasSpores;
         HAS_SEED = hasSeed;
         HAS_FLOWER = hasFlower;
+        HAS_FRUIT = hasFruit;
         WHERE_FIND_IT = whereFindIt;
         
     }
@@ -44,12 +46,8 @@ public class Plant {
         return IS_VASCULAR;
     }
     
-    public String getREPRODUCTION_TYPE() {
-        return REPRODUCTION_TYPE;
-    }
-    
-    public boolean getWATER_DEPENDENT_REPRODUCTION() {
-        return WATER_DEPENDENT_REPRODUCTION;
+    public String getDEPENDENT_TO_REPRODUCTION() {
+        return DEPENDENT_TO_REPRODUCTION;
     }
     
     public String getMAIN_LIFE_CYCLE() {
@@ -68,12 +66,20 @@ public class Plant {
         return HAS_LEAVES;
     }
     
+    public boolean getHAS_SPORES() {
+        return HAS_SPORES;
+    }
+    
     public boolean getHAS_SEED() {
         return HAS_SEED;
     }
     
     public boolean getHAS_FLOWER() {
         return HAS_FLOWER;
+    }
+    
+    public boolean getHAS_FRUITS() {
+        return HAS_FRUIT;
     }
     
     public String getWHERE_FIND_IT() {
