@@ -5,7 +5,6 @@ import controller.obsever.VillageScreenObserver;
 import model.*;
 import global.GlobalVariables;
 
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -20,15 +19,13 @@ public class VillageScreenController {
     private Interactive currentInteractive;
     private boolean firstInteraction;
     private final static TileContent[][] VILLAGE_TILES_CONTENT = new TileContent[21][39];
-    private final static java.util.Map<String, Interactive> INTERACTIVES = new HashMap<>();
-    private final static java.util.Map<String, Teleport> TELEPORTS = new HashMap<>();
     
     //INITIALIZE STATIC ITENS
     static {
         try {
             //TILE CONTENT
             Properties properties = new Properties();
-            properties.load(new FileInputStream("./src/global/village.properties"));
+            properties.load(VillageScreenController.class.getResourceAsStream("/mapProperties/village.properties"));
             for(int row = 0; row < 21; row++) {
                 for(int column = 0; column < 39; column++) {
                     try {
@@ -45,55 +42,57 @@ public class VillageScreenController {
     
     public VillageScreenController(VillageScreenObserver observer) {
         this.observer = observer;
-        map = new Map(GlobalVariables.SCREEN_HEIGHT, GlobalVariables.SCREEN_WIDTH, VILLAGE_TILES_CONTENT, INTERACTIVES, TELEPORTS);
+        java.util.Map<String, Interactive> interactives = new HashMap<>();
+        java.util.Map<String, Teleport> teleports = new HashMap<>();
+        //interactives
+        //Initial lines
+        interactives.put("17x33", new Interactive(17, 33, Repository.getInstance().getIntroductionLines()));
+        //npcs
+        interactives.put("4x15", new Interactive(4, 15, Repository.getInstance().getNpcLines(0)));
+        interactives.put("4x21", new Interactive(4, 21, Repository.getInstance().getNpcLines(1)));
+        interactives.put("5x25", new Interactive(5, 25, Repository.getInstance().getNpcLines(2)));
+        interactives.put("15x8", new Interactive(15, 8, Repository.getInstance().getNpcLines(3)));
+        interactives.put("14x16", new Interactive(14, 16, Repository.getInstance().getNpcLines(4)));
+        //teleports
+        teleports.put("9x5", new Teleport(9, 5, "navigateToHouseScreen"));
+        teleports.put("9x33", new Teleport(9, 33, "navigateToMarketScreen"));
+        teleports.put("16x24", new Teleport(16, 24, "navigateToTrailerScreen"));
+        map = new Map(GlobalVariables.SCREEN_HEIGHT, GlobalVariables.SCREEN_WIDTH, VILLAGE_TILES_CONTENT, interactives, teleports);
         map.setPlayer(new Player(17, 33));
         currentTeleport = null;
         currentInteractive = null;
         firstInteraction = true;
-    
-        //INTERACTIVES
-        //Initial lines
-        INTERACTIVES.put("17x33", new Interactive(17, 33, Repository.getInstance().getIntroductionLines()));
-        
-        INTERACTIVES.put("4x15", new Interactive(4, 15, Repository.getInstance().getNpcLines(0)));
-        INTERACTIVES.put("4x21", new Interactive(4, 21, Repository.getInstance().getNpcLines(1)));
-        INTERACTIVES.put("5x25", new Interactive(5, 25, Repository.getInstance().getNpcLines(2)));
-        INTERACTIVES.put("15x8", new Interactive(15, 8, Repository.getInstance().getNpcLines(3)));
-        INTERACTIVES.put("14x16", new Interactive(14, 16, Repository.getInstance().getNpcLines(4)));
-        //TELEPORTS
-        TELEPORTS.put("9x5", new Teleport(9, 5, "navigateToHouseScreen"));
-        TELEPORTS.put("9x33", new Teleport(9, 33, "navigateToMarketScreen"));
-        TELEPORTS.put("16x24", new Teleport(16, 24, "navigateToTrailerScreen"));
     }
     
     public VillageScreenController(VillageScreenObserver observer, int plawerRow, int playerColumn) {
         this.observer = observer;
-        map = new Map(GlobalVariables.SCREEN_HEIGHT, GlobalVariables.SCREEN_WIDTH, VILLAGE_TILES_CONTENT, INTERACTIVES, TELEPORTS);
+        java.util.Map<String, Interactive> interactives = new HashMap<>();
+        java.util.Map<String, Teleport> teleports = new HashMap<>();
+        //interactives
+        //Initial lines
+        interactives.put("17x33", new Interactive(17, 33, Repository.getInstance().getIntroductionLines()));
+        //npcs
+        interactives.put("4x15", new Interactive(4, 15, Repository.getInstance().getNpcLines(0)));
+        interactives.put("4x21", new Interactive(4, 21, Repository.getInstance().getNpcLines(1)));
+        interactives.put("5x25", new Interactive(5, 25, Repository.getInstance().getNpcLines(2)));
+        interactives.put("15x8", new Interactive(15, 8, Repository.getInstance().getNpcLines(3)));
+        interactives.put("14x16", new Interactive(14, 16, Repository.getInstance().getNpcLines(4)));
+        //teleports
+        teleports.put("9x5", new Teleport(9, 5, "navigateToHouseScreen"));
+        teleports.put("9x33", new Teleport(9, 33, "navigateToMarketScreen"));
+        teleports.put("16x24", new Teleport(16, 24, "navigateToTrailerScreen"));
+        map = new Map(GlobalVariables.SCREEN_HEIGHT, GlobalVariables.SCREEN_WIDTH, VILLAGE_TILES_CONTENT, interactives, teleports);
         map.setPlayer(new Player(plawerRow, playerColumn));
         map.getPlayer().setWalkState(new WalkStateDown(map.getPlayer()));
         currentTeleport = null;
         currentInteractive = null;
         firstInteraction = true;
-        //INTERACTIVES
-        //Initial lines
-        INTERACTIVES.put("17x33", new Interactive(17, 33, Repository.getInstance().getIntroductionLines()));
-        
-        INTERACTIVES.put("4x15", new Interactive(4, 15, Repository.getInstance().getNpcLines(0)));
-        INTERACTIVES.put("4x21", new Interactive(4, 21, Repository.getInstance().getNpcLines(1)));
-        INTERACTIVES.put("5x25", new Interactive(5, 25, Repository.getInstance().getNpcLines(2)));
-        INTERACTIVES.put("15x8", new Interactive(15, 8, Repository.getInstance().getNpcLines(3)));
-        INTERACTIVES.put("14x16", new Interactive(14, 16, Repository.getInstance().getNpcLines(4)));
-        INTERACTIVES.put("17x31", new Interactive(17, 31, Repository.getInstance().getNpcLines(5)));
-        //TELEPORTS
-        TELEPORTS.put("9x5", new Teleport(9, 5, "navigateToHouseScreen"));
-        TELEPORTS.put("9x33", new Teleport(9, 33, "navigateToMarketScreen"));
-        TELEPORTS.put("16x24", new Teleport(16, 24, "navigateToTrailerScreen"));
     }
     
     public void isFirstEnter() {
         if (Repository.getInstance().isFirstEnterInVillage()) {
             hasObject(getPlayerRow(), getPlayerColumn());
-            currentInteractive = INTERACTIVES.get(getPlayerRow()+"x"+getPlayerColumn());
+            currentInteractive = map.getInteractives().get(getPlayerRow()+"x"+getPlayerColumn());
             interact();
         }
     }
@@ -275,12 +274,12 @@ public class VillageScreenController {
             return false;
         }
         if (map.getTileContents()[row][column].equals(TileContent.TELEPORT)) {
-            currentTeleport = TELEPORTS.get(row+"x"+column);
+            currentTeleport = map.getTeleports().get(row+"x"+column);
             observer.enableTeleport(row-2, column);
             return false;
         }
         else if (map.getTileContents()[row][column].equals(TileContent.INTERACTIVE)) {
-            currentInteractive = INTERACTIVES.get(row+"x"+column);
+            currentInteractive = map.getInteractives().get(row+"x"+column);
             observer.enableInteractive(row-2, column);
             return false;
         }

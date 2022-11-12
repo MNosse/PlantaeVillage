@@ -45,7 +45,7 @@ public class TrailerScreen extends JPanel implements TrailerScreenObserver {
         lblTeleport.setBounds(0, 0, 0, 0);
         //JTEXTAREA txaDialogText
         txaDialogText = new JTextArea();
-        txaDialogText.setFont(GlobalVariables.FONT_3.deriveFont(GlobalVariables.ONE_PIXEL_SIZE*17f));
+        txaDialogText.setFont(GlobalVariables.FONT_2.deriveFont(GlobalVariables.ONE_PIXEL_SIZE*17f));
         txaDialogText.setLineWrap(true);
         txaDialogText.setWrapStyleWord(true);
         txaDialogText.setVisible(true);

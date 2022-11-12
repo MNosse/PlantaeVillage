@@ -24,7 +24,7 @@ public class Button extends JButton {
         setPreferredSize(new Dimension(width, height));
         setFocusPainted(false);
         setBorderPainted(false);
-        setFont(GlobalVariables.FONT_3.deriveFont(GlobalVariables.ONE_PIXEL_SIZE*fontSize));
+        setFont(GlobalVariables.FONT_2.deriveFont(GlobalVariables.ONE_PIXEL_SIZE*fontSize));
         setForeground(new Color(220, 220, 220));
         setText(text);
         

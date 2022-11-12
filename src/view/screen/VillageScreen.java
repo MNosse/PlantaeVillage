@@ -84,7 +84,7 @@ public class VillageScreen extends JPanel implements VillageScreenObserver{
         lblTeleport.setBounds(0, 0, 0, 0);
         //JTEXTAREA txaDialogText
         txaDialogText = new JTextArea();
-        txaDialogText.setFont(GlobalVariables.FONT_3.deriveFont(GlobalVariables.ONE_PIXEL_SIZE*17f));
+        txaDialogText.setFont(GlobalVariables.FONT_2.deriveFont(GlobalVariables.ONE_PIXEL_SIZE*17f));
         txaDialogText.setLineWrap(true);
         txaDialogText.setWrapStyleWord(true);
         txaDialogText.setVisible(true);
@@ -118,7 +118,7 @@ public class VillageScreen extends JPanel implements VillageScreenObserver{
         lblPause.add(btnQuit, constraints);
         lblPause.setVisible(false);
         //FONT testFont
-        Font testFont = GlobalVariables.FONT_3.deriveFont(GlobalVariables.ONE_PIXEL_SIZE*14f);
+        Font testFont = GlobalVariables.FONT_2.deriveFont(GlobalVariables.ONE_PIXEL_SIZE*14f);
         //JTEXTAREA txaQuestion1
         JTextArea txaQuestion1 = new JTextArea("1) A qual grupo pertence a planta recebida?");
         txaQuestion1.setLayout(new GridBagLayout());
@@ -348,10 +348,10 @@ public class VillageScreen extends JPanel implements VillageScreenObserver{
         txaOption2Q8.setFont(testFont);
         //JRADIOBUTTON jrbOption3Q8
         JRadioButton jrbOption3Q8 = new JRadioButton();
-        jrbOption3Q8.setActionCommand("Normalmente localizadas em locais úmidos das florestas e ao longe de cursos de água.");
+        jrbOption3Q8.setActionCommand("Normalmente localizadas em locais úmidos das florestas e ao longo de cursos de água.");
         jrbOption3Q8.setBackground(Color.white);
         //JTEXTAREA txaOption3Q8
-        JTextArea txaOption3Q8 = new JTextArea("Normalmente localizadas em locais úmidos das florestas e ao longe de cursos de água.");
+        JTextArea txaOption3Q8 = new JTextArea("Normalmente localizadas em locais úmidos das florestas e ao longo de cursos de água.");
         txaOption3Q8.setLineWrap(true);
         txaOption3Q8.setWrapStyleWord(true);
         txaOption3Q8.setEditable(false);
@@ -583,7 +583,7 @@ public class VillageScreen extends JPanel implements VillageScreenObserver{
         btnFinish.addActionListener(click -> finishTest());
     }
     
-    public void closeTest() {
+    private void closeTest() {
         btgOptionsQ1.clearSelection();
         btgOptionsQ2.clearSelection();
         btgOptionsQ3.clearSelection();
@@ -596,7 +596,7 @@ public class VillageScreen extends JPanel implements VillageScreenObserver{
         lblTest.setVisible(false);
     }
     
-    public void finishTest() {
+    private void finishTest() {
         Object[] answers = new Object[8];
         ButtonModel bm;
         bm = btgOptionsQ1.getSelection();

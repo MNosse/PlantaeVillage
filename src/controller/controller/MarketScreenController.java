@@ -5,13 +5,10 @@ import controller.obsever.MarketScreenObserver;
 import global.GlobalVariables;
 import model.*;
 
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.Arrays;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.Properties;
 
 public class MarketScreenController {
@@ -22,15 +19,13 @@ public class MarketScreenController {
     private Interactive currentInteractive;
     private boolean firstInteraction;
     private final static TileContent[][] MARKET_TILES_CONTENT = new TileContent[21][39];
-    private final static java.util.Map<String, Interactive> INTERACTIVES = new HashMap<>();
-    private final static java.util.Map<String, Teleport> TELEPORTS = new HashMap<>();
     
     //INITIALIZE STATIC ITENS
     static {
         try {
             //TILE CONTENT
             Properties properties = new Properties();
-            properties.load(new FileInputStream("./src/global/market.properties"));
+            properties.load(MarketScreenController.class.getResourceAsStream("/mapProperties/market.properties"));
             for(int row = 0; row < 21; row++) {
                 for(int column = 0; column < 39; column++) {
                     try {
@@ -47,18 +42,20 @@ public class MarketScreenController {
     
     public MarketScreenController(MarketScreenObserver observer) {
         this.observer = observer;
-        map = new Map(GlobalVariables.SCREEN_HEIGHT, GlobalVariables.SCREEN_WIDTH, MARKET_TILES_CONTENT, INTERACTIVES, TELEPORTS);
+        java.util.Map<String, Interactive> interactives = new HashMap<>();
+        java.util.Map<String, Teleport> teleports = new HashMap<>();
+        //interactives
+        interactives.put("11x13", new Interactive(11, 13, Repository.getInstance().getNpcLines(8)));
+        interactives.put("11x14", new Interactive(11, 14, Repository.getInstance().getNpcLines(9)));
+        interactives.put("14x27", new Interactive(14, 27, Repository.getInstance().getNpcLines(10)));
+        interactives.put("17x24", new Interactive(17, 24, Repository.getInstance().getNpcLines(11)));
+        //teleports
+        teleports.put("20x19", new Teleport(20, 19, "navigateToVillageScreen"));
+        map = new Map(GlobalVariables.SCREEN_HEIGHT, GlobalVariables.SCREEN_WIDTH, MARKET_TILES_CONTENT, interactives, teleports);
         map.setPlayer(new Player(20, 19));
         currentTeleport = null;
         currentInteractive = null;
         firstInteraction = true;
-        //INTERACTIVES
-        INTERACTIVES.put("11x13", new Interactive(11, 13, Repository.getInstance().getNpcLines(8)));
-        INTERACTIVES.put("11x14", new Interactive(11, 14, Repository.getInstance().getNpcLines(9)));
-        INTERACTIVES.put("14x27", new Interactive(14, 27, Repository.getInstance().getNpcLines(10)));
-        INTERACTIVES.put("17x24", new Interactive(17, 24, Repository.getInstance().getNpcLines(11)));
-        //TELEPORTS
-        TELEPORTS.put("20x19", new Teleport(20, 19, "navigateToVillageScreen"));
     }
     
     public void teleport(GameFrameObserver gameFrameObserver) {
@@ -174,12 +171,12 @@ public class MarketScreenController {
             return false;
         }
         if (map.getTileContents()[row][column].equals(TileContent.TELEPORT)) {
-            currentTeleport = TELEPORTS.get(row+"x"+column);
+            currentTeleport = map.getTeleports().get(row+"x"+column);
             observer.enableTeleport(row-2, column);
             return false;
         }
         else if (map.getTileContents()[row][column].equals(TileContent.INTERACTIVE)) {
-            currentInteractive = INTERACTIVES.get(row+"x"+column);
+            currentInteractive = map.getInteractives().get(row+"x"+column);
             observer.enableInteractive(row-2, column);
             return false;
         }
